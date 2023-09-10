@@ -6,5 +6,6 @@ from .serializers import CompanySerilizer
 class CompanyView(generics.ListCreateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerilizer
+    http_method_names = ('get',)
 
 

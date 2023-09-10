@@ -3,6 +3,7 @@ from .models import InterviewExperience
 from questions.serializers import QuestionSerializer
 from questions.models import QuestionModel
 from django.utils.translation import gettext_lazy as _
+from company.models import Company
 
 class InterviewReadSerilizer(serializers.ModelSerializer):
 
@@ -28,6 +29,7 @@ class InterviewReadSerilizer(serializers.ModelSerializer):
 
 class InterviewWriteSerilizer(serializers.ModelSerializer):
 
+    company = serializers.CharField()
     user = serializers.SerializerMethodField()
     total_questions = serializers.SerializerMethodField()
     interview_questions = QuestionSerializer(many = True)
@@ -41,10 +43,15 @@ class InterviewWriteSerilizer(serializers.ModelSerializer):
 
 
     def create(self,validated_data):
+        company_data = validated_data.pop('company')
+        if not (Company.objects.filter(name = company_data).exists()) :
+            Company.objects.create(name = company_data)
+        company_id = Company.objects.get(name=company_data)
+        
         questions_data = validated_data.pop('interview_questions')
-        interview = InterviewExperience.objects.create(**validated_data)
+        interview = InterviewExperience.objects.create(company = company_id,**validated_data)
         for question_data in questions_data:
-            QuestionModel.objects.create(interview=interview,user=interview.user,company = interview.company,**question_data)
+            QuestionModel.objects.create(interview=interview,user=interview.user,company = company_id,**question_data)
         return interview
 
     def update(self, instance, validated_data):

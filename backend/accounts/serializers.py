@@ -23,7 +23,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    username = serializers.EmailField()
+    username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
 class ChangePasswordSerializer(serializers.Serializer):

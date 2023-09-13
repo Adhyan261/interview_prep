@@ -30,9 +30,8 @@ class RegisterUserView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'username':serializer.data.get('username'), 'email':serializer.data.get('email'), 'message':'User created successfully'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class UserLoginView(generics.CreateAPIView):
     serializer_class = UserLoginSerializer
@@ -59,7 +58,7 @@ class UserLoginView(generics.CreateAPIView):
 
 class UserLogoutView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
-
+    
     def destroy(self, request, *args, **kwargs):
         try:
             # Delete the user's token to log out
